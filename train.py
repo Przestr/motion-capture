@@ -79,30 +79,40 @@ print(X.shape)
 y = utils.to_categorical(y)
 
 #print(y.shape)
-#SIEC DO PODMIANY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-#model = Sequential()
-#model.add(LSTM(256, input_shape = (X.shape[1], X.shape[2]), return_sequences=True))
-#model.add(Dropout(0.2))
-#model.add(LSTM(256))
-#model.add(Dropout(0.2))
-#model.add(Dense(3, activation='softmax'))
-#model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-#model.summary()
 
 X = X.reshape(list(X.shape) + [1]) 
 
-model = Sequential()
+# Model initialization
+model = Sequential()  
+# Adding 2D convolution layer.
+# Params
+# the number of output filters in the convolution
+# height and width of the 2D convolution window
+# activation function to use
+# adding padding
+# number of rows, columns and channels in input data
 model.add(Conv2D(1, (2,2), activation='relu', padding='same', input_shape = (X.shape[1], X.shape[2], 1)))
+# Adding pooling
+# Params
+# window size over which to take the maximum
+# specifies how far the pooling window moves for each pooling step
+# adding padding
 model.add(MaxPooling2D(pool_size=(2, 2),strides=(2,2), padding='same'))
+# Adding flatting. Transform input matrix into vector
 model.add(Flatten())
+# Adding dense layer
+# Params
+# dimensionality of the output space
+# activation function to use
 model.add(Dense(3, activation='softmax'))
+# Compiling model
+# Params
+# loss function
+# name of optimizer
+# list of metrics to be evaluated by the model during training and testing.
 model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 model.summary()
-#SIEC DO PODMIANY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
 
 filepath = "weights-improvement-{epoch:02d}-{loss:.4f}-biggeer.hdf5"
