@@ -7,8 +7,9 @@ import numpy as np
 import pickle
 import glob
 import pandas as pd
-from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
 from keras.layers import Dense, Dropout, Activation, Flatten
+from matplotlib import pyplot as plt
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
@@ -58,6 +59,9 @@ for ex in tot:
     seq.append(data)
 print(tot)
 
+print("AAAA")
+print(len(tot))
+
 for fileno in range(len(seq)):
     #seq[fileno] = seq[fileno][:-(len(seq[fileno])%300)]
     for i in range(0,len(seq[fileno])-seq_len,1):
@@ -78,8 +82,8 @@ print(X.shape)
 
 y = utils.to_categorical(y)
 
+print(y[40])
 #print(y.shape)
-#SIEC DO PODMIANY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #model = Sequential()
 #model.add(LSTM(256, input_shape = (X.shape[1], X.shape[2]), return_sequences=True))
@@ -96,20 +100,35 @@ X = X.reshape(list(X.shape) + [1])
 model = Sequential()
 model.add(Conv2D(1, (2,2), activation='relu', padding='same', input_shape = (X.shape[1], X.shape[2], 1)))
 model.add(MaxPooling2D(pool_size=(2, 2),strides=(2,2), padding='same'))
+model.add(Conv2D(1, (2,2), activation='relu', padding='same', input_shape = (X.shape[1]/4, X.shape[2]/4, 1)))
+model.add(MaxPooling2D(pool_size=(2, 2),strides=(2,2), padding='same'))
 model.add(Flatten())
 model.add(Dense(3, activation='softmax'))
 model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 model.summary()
-#SIEC DO PODMIANY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
 
 filepath = "weights-improvement-{epoch:02d}-{loss:.4f}-biggeer.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose = 1, save_best_only=True, mode = 'min')
 callbacks_list = [checkpoint]
 
-model.fit(X, y, epochs = 5, batch_size=32, callbacks=callbacks_list)
+history = model.fit(X, y, validation_split = 0.2, epochs = 60, batch_size=32, callbacks=callbacks_list)
+plt.plot(history.history['accuracy']) 
+plt.plot(history.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'val'], loc='upper left')
+plt.show()
+
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'val'], loc='upper left')
+plt.show()
 
 model.save("try1.h5")
 

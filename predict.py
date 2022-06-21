@@ -20,9 +20,9 @@ if gpus:
 
 x  = []
 
-model = load_model("weights-improvement-05-0.0367-biggeer.hdf5", compile=False)
+model = load_model("weights-improvement-60-0.0663-biggeer.hdf5", compile=False)
 
-pickle_in = open('C:/Users/Strum/Desktop/cvapr/Movement-classification/pickle_data/01_14_worldpos.pickle',"rb")
+pickle_in = open('C:/Users/Strum/Desktop/cvapr/Movement-classification/pickle_data/09_01_worldpos.pickle',"rb")
 data = pickle.load(pickle_in)
 
 data = data[:100]
@@ -32,14 +32,13 @@ data = np.reshape(data, (1, data.shape[0],data.shape[1]*data.shape[2]))
 result = []
 result = model.predict(data)
 
-print("Result of the prediction:")
 
 if(result[0][0] == 1.0):
-    print("walk")
+    print("Result of the prediction: walk")
 elif(result[0][1] == 1.0):
-    print("run")
+    print("Result of the prediction: run")
 else:
-    print("jump")
+    print("Result of the prediction: jump")
 
 
 #print(model.predict(data))
